@@ -9,9 +9,10 @@
 let
   system = pkgs.stdenv.system;
   pkgs-unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
+  has_pyproject = builtins.pathExists ./pyproject.toml;
+  has_package_json = builtins.pathExists ./package.json;
 
   basePkgs = with pkgs; [
-    opentofu
     uv
     jq
     yq
@@ -20,10 +21,8 @@ let
     git
     just
     pre-commit
-    redli
   ];
   devLSPs = with pkgs; [
-    tofu-ls
     nixfmt-rfc-style
     nil
     luarocks-nix
@@ -54,23 +53,41 @@ in
     ];
   };
 
-  scripts.terraform.exec = ''tofu "$@"'';
+  # scripts moved to .scripts/ (see .scripts/init_agent.sh and .scripts/ensure_project_name.sh)
 
   profiles = {
     dev.module = {
       packages = devExtras ++ devLSPs;
 
-      languages.python.uv.enable = true;
-      languages.python.uv.sync.enable = true;
-      languages.python.uv.sync.allGroups = true;
+       # Enable Python uv sync when pyproject.toml exists
+       languages.python.uv = lib.mkIf has_pyproject {
+         enable = true;
+         sync.enable = true;
+         sync.allGroups = true;
+       };
+
+       # Enable Bun in dev when package.json exists at project root
+       languages.javascript = lib.mkIf has_package_json {
+         enable = true;
+         bun.enable = true;
+         bun.install.enable = true;
+       };
       env = {
-        ANSIBLE_LOCAL_TEMP = "${config.devenv.root}/Artifacts/Ansible/.ansible_local_tmp";
-        ANSIBLE_REMOTE_TMP = "/tmp/.ansible_remote_tmp";
+        # VAR = myvar
       };
 
       enterShell = ''
-        mkdir -p ${config.devenv.root}/Artifacts/Ansible/.ansible_local_tmp
         pre-commit install --hook-type pre-commit --hook-type pre-push >/dev/null 2>&1 || true
+
+        # Initialize agent worktree (delegated to .scripts/init_agent.sh)
+        bash .scripts/init_agent.sh || true
+
+        # Ensure project name is set (delegated to script)
+        if [ -f .project_name ]; then
+          echo ".project_name exists; skipping project initialization."
+        else
+          bash .scripts/ensure_project_name.sh
+        fi
       '';
     };
 
@@ -78,13 +95,6 @@ in
       extends = [ "dev" ];
       module = {
         packages = agentPkgs;
-
-        # JS for opencode & openspec
-        languages.javascript = {
-          enable = true;
-          bun.enable = true;
-          bun.install.enable = true;
-        };
 
         enterShell = ''
           # per-worktree git guardrails
