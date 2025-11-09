@@ -31,7 +31,22 @@ let
   agentPkgs = [
     # pkgs-unstable.codex
   ];
-in
+
+  # Common enter shell steps used by all profiles (small, self-contained)
+  enterShellCommon = ''
+    pre-commit install --hook-type pre-commit --hook-type pre-push >/dev/null 2>&1 || true
+
+    # Initialize agent worktree (delegated to .scripts/init_agent.sh)
+    bash .scripts/init_agent.sh || true
+
+    # Ensure project name is set (delegated to script)
+    if [ -f .project_name ]; then
+      echo ".project_name exists; skipping project initialization."
+    else
+      bash .scripts/ensure_project_name.sh
+    fi
+  '';
+ in
 {
   # base (always)
   packages = basePkgs;
@@ -76,19 +91,7 @@ in
         # VAR = myvar
       };
 
-      enterShell = ''
-        pre-commit install --hook-type pre-commit --hook-type pre-push >/dev/null 2>&1 || true
-
-        # Initialize agent worktree (delegated to .scripts/init_agent.sh)
-        bash .scripts/init_agent.sh || true
-
-        # Ensure project name is set (delegated to script)
-        if [ -f .project_name ]; then
-          echo ".project_name exists; skipping project initialization."
-        else
-          bash .scripts/ensure_project_name.sh
-        fi
-      '';
+      enterShell = enterShellCommon;
     };
 
     agent = {
@@ -96,7 +99,7 @@ in
       module = {
         packages = agentPkgs;
 
-        enterShell = ''
+        enterShell = ''${enterShellCommon}
           # per-worktree git guardrails
           git config extensions.worktreeConfig true || true
           git config --worktree credential.helper ""  || true
