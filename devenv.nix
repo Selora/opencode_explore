@@ -20,10 +20,8 @@ let
     git
     just
     pre-commit
-    redli
   ];
   devLSPs = with pkgs; [
-    tofu-ls
     nixfmt-rfc-style
     nil
     luarocks-nix
@@ -59,17 +57,16 @@ in
   profiles = {
     dev.module = {
       packages = devExtras ++ devLSPs;
-
-      languages.python.uv.enable = true;
-      languages.python.uv.sync.enable = true;
-      languages.python.uv.sync.allGroups = true;
+      
+      # Uncomment if using python
+      #languages.python.uv.enable = true;
+      #languages.python.uv.sync.enable = true;
+      #languages.python.uv.sync.allGroups = true;
       env = {
-        ANSIBLE_LOCAL_TEMP = "${config.devenv.root}/Artifacts/Ansible/.ansible_local_tmp";
-        ANSIBLE_REMOTE_TMP = "/tmp/.ansible_remote_tmp";
+         #MY_VAR = var
       };
 
       enterShell = ''
-        mkdir -p ${config.devenv.root}/Artifacts/Ansible/.ansible_local_tmp
         pre-commit install --hook-type pre-commit --hook-type pre-push >/dev/null 2>&1 || true
       '';
     };
@@ -79,7 +76,7 @@ in
       module = {
         packages = agentPkgs;
 
-        # JS for opencode & openspec
+        # JS for codex, opencode, openspec
         languages.javascript = {
           enable = true;
           bun.enable = true;
