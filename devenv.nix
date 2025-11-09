@@ -51,7 +51,6 @@ in
     ];
   };
 
-  scripts.terraform.exec = ''tofu "$@"'';
 
   profiles = {
     dev.module = {
