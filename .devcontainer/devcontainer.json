@@ -1,0 +1,43 @@
+{
+  "service": "app",
+  "name": "__PROJECT_NAME__",
+  "dockerComposeFile": "docker-compose.yml",
+  "workspaceFolder": "/workspaces/__PROJECT_NAME__",
+  "userEnvProbe": "loginShell",
+  "runServices": [
+    //  "redis",
+    "app"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/nix:1": {}
+  },
+  "shutdownAction": "stopCompose",
+  "remoteUser": "vscode",
+  "containerEnv": {
+    "APP_ENV": "dev"
+  },
+  "postCreateCommand": [
+    "bash",
+    "-lc",
+    "echo \"trusted-users = vscode root\" | sudo tee -a /etc/nix/nix.conf >/dev/null; sudo pkill nix-daemon || true; sudo mkdir -p /nix/var/log; sudo sh -lc \"nohup nix-daemon >>/nix/var/log/nix-daemon.log 2>&1 &\""
+  ],
+  // seccomp messes with codex-cli sandbox, set unconfined if using codex
+  "securityOpt": [
+    // "seccomp=unconfined"
+    //"apparmor=docker-bwrap"
+  ],
+  // Forward ports to localhost
+  "forwardPorts": [
+    //  8000,
+    //  6379
+  ],
+  // Not super useful
+  "portsAttributes": {
+    //  "8000": {
+    //    "label": "api"
+    //  },
+    //  "6379": {
+    //    "label": "redis"
+    //  }
+  }
+}

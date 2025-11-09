@@ -1,0 +1,13 @@
+{
+  "name": "opencode",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "dependencies": {
+    "@openai/codex": "latest",
+    "opencode-ai": "latest",
+    "@fission-ai/openspec": "latest"
+  }
+}

@@ -1,0 +1,13 @@
+---
+services:
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: selora/__PROJECT_NAME__
+    command: sleep infinity
+    volumes:
+      - ..:/workspaces/__PROJECT_NAME__
+    tty: true
+    stdin_open: true
+    # force a login shell so /etc/profile.d/nix.sh runs if present
