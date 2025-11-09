@@ -31,6 +31,23 @@ let
   ];
 in
 {
+  scripts.init_agent.exec = ''
+    set -euo pipefail
+    BRANCH="agent/dev"
+    TARGET="../$BRANCH"
+
+    if [ -d "$TARGET" ]; then
+      echo "Worktree already exists at $TARGET"
+    elif git show-ref --verify --quiet "refs/heads/$BRANCH"; then
+      git worktree add "$TARGET" "$BRANCH"
+    else
+      git worktree add -b "$BRANCH" "$TARGET"
+    fi
+
+    cd "$TARGET"
+    echo "Run \`cd $(pwd) && direnv allow\`"
+  '';
+
   # base (always)
   packages = basePkgs;
 
