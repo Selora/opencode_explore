@@ -11,7 +11,6 @@ let
   pkgs-unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
 
   basePkgs = with pkgs; [
-    opentofu
     uv
     jq
     yq
