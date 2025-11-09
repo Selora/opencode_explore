@@ -16,7 +16,7 @@ if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9-]{3,9}$ ]]; then
 fi
 
 # Run sed across all tracked files except .git/
-find . -type f ! -path "./.git/*" -exec sed -i "s/__PROJECT_NAME__/${PROJECT_NAME}/g" {} +
+find . -type f ! -path "./.git/*" -exec sed -i "s/ocode-ex/${PROJECT_NAME}/g" {} +
 
-echo "All occurrences of __PROJECT_NAME__ replaced with '$PROJECT_NAME'."
+echo "All occurrences of ocode-ex replaced with '$PROJECT_NAME'."
 echo "Good to go!"

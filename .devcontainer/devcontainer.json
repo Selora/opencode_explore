@@ -1,8 +1,8 @@
 {
   "service": "app",
-  "name": "__PROJECT_NAME__",
+  "name": "ocode-ex",
   "dockerComposeFile": "docker-compose.yml",
-  "workspaceFolder": "/workspaces/__PROJECT_NAME__",
+  "workspaceFolder": "/workspaces/ocode-ex",
   "userEnvProbe": "loginShell",
   "runServices": [
     //  "redis",

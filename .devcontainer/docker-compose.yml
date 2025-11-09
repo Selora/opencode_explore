@@ -4,10 +4,10 @@ services:
     build:
       context: .
       dockerfile: dockerfile
-    image: selora/__PROJECT_NAME__
+    image: selora/ocode-ex
     command: sleep infinity
     volumes:
-      - ..:/workspaces/__PROJECT_NAME__
+      - ..:/workspaces/ocode-ex
     tty: true
     stdin_open: true
     # force a login shell so /etc/profile.d/nix.sh runs if present

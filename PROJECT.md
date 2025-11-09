@@ -1,4 +1,4 @@
-# __PROJECT_NAME__
+# ocode-ex
 
 Specific project overview
 
